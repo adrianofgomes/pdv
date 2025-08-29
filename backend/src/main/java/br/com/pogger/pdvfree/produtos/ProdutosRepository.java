@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProdutosRepository extends CrudRepository<ProdutosEntity, Long> {
 
-  List<ProdutosEntity> findByNome(String nome);
+  List<ProdutosEntity> findByDescricaoContaining(String descricao);
 
-  ProdutosEntity findById(long id);
+  //ProdutosEntity findById(long id);
 
 }

@@ -4,16 +4,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
+
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
 
 @Entity
 public class ProdutosEntity {
     
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    private String nome;
-    private Double preco;
+    @Version
+    @Column(name = "nu_vrs")
+    private Long numeroVersao;
+
+    @Column(name = "descricao", length = 255, nullable = false, unique = true)
+    private String descricao;
+
+    @Column(name = "precoCusto", precision = 15, scale = 2, nullable = true)
+    private BigDecimal precoCusto;
 
     // Getters and Setters
     public Long getId() {
@@ -24,19 +37,28 @@ public class ProdutosEntity {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public Long getNumeroVersao() {
+        return numeroVersao;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setNumeroVersao(Long numeroVersao) {
+        this.numeroVersao = numeroVersao;
     }
 
-    public Double getPreco() {
-        return preco;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setPreco(Double preco) {
-        this.preco = preco;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
+
+    public BigDecimal getPrecoCusto() {
+        return precoCusto;
+    }
+
+    public void setPrecoCusto(BigDecimal precoCusto) {
+        this.precoCusto = precoCusto;
+    }
+    
 }
