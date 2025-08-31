@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import jakarta.persistence.Column;
 
 @Entity
+@Table(name = "cad_produtos")
 public class ProdutosEntity {
     
     @Id
@@ -25,7 +27,7 @@ public class ProdutosEntity {
     @Column(name = "descricao", length = 255, nullable = false, unique = true)
     private String descricao;
 
-    @Column(name = "precoCusto", precision = 15, scale = 2, nullable = true)
+    @Column(name = "preco_custo", precision = 15, scale = 2, nullable = true)
     private BigDecimal precoCusto;
 
     @Override
