@@ -28,6 +28,12 @@ public class ProdutosEntity {
     @Column(name = "precoCusto", precision = 15, scale = 2, nullable = true)
     private BigDecimal precoCusto;
 
+    @Override
+    public String toString() {
+        return this.id.toString().concat(" - ").concat(this.descricao)
+            .concat(" - ").concat(this.numeroVersao.toString());
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
