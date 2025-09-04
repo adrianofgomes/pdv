@@ -29,9 +29,7 @@ class ProdutosRepositoryTest {
     @DisplayName("Deve salvar e buscar produto por id")
     @Rollback
     void testSaveAndFindById() {
-        ProdutosEntity produto = new ProdutosEntity();
-        produto.setDescricao("Produto Teste");
-        produto.setPrecoCusto(new BigDecimal("12.34"));
+        ProdutosEntity produto = new ProdutosEntity("Produto Teste", new BigDecimal("12.34"));
 
         ProdutosEntity saved = produtosRepository.save(produto);
 
@@ -45,9 +43,7 @@ class ProdutosRepositoryTest {
     @DisplayName("Deve buscar produto por descricao exclusiva")
     @Rollback
     void testFindByDescricao() {
-        ProdutosEntity produto = new ProdutosEntity();
-        produto.setDescricao("Descricao Unica");
-        produto.setPrecoCusto(new BigDecimal("1.00"));
+        ProdutosEntity produto = new ProdutosEntity("Descricao Unica", new BigDecimal("1.00"));
         produtosRepository.save(produto);
 
         List<ProdutosEntity> encontrados = produtosRepository.findByDescricaoContaining("Descricao Unica");
@@ -74,16 +70,11 @@ class ProdutosRepositoryTest {
     @Test
     void deveBuscarProdutosPorDescricaoParcial() {
         // Arrange
-        ProdutosEntity produto1 = new ProdutosEntity();
-        produto1.setDescricao("Coca-Cola 2L");
+        ProdutosEntity produto1 = new ProdutosEntity("Coca-Cola 2L", new BigDecimal("1.00"));
         produtosRepository.save(produto1);
-
-        ProdutosEntity produto2 = new ProdutosEntity();
-        produto2.setDescricao("Coca-Cola Lata");
+        ProdutosEntity produto2 = new ProdutosEntity("Coca-Cola Lata", new BigDecimal("1.00"));
         produtosRepository.save(produto2);
-
-        ProdutosEntity produto3 = new ProdutosEntity();
-        produto3.setDescricao("Pepsi 2L");
+        ProdutosEntity produto3 = new ProdutosEntity("Pepsi 2L", new BigDecimal("1.00"));
         produtosRepository.save(produto3);
 
         // Act
@@ -101,9 +92,7 @@ class ProdutosRepositoryTest {
     //@Transactional
     void testOptimisticLocking() {
         // Salva o produto inicial
-        ProdutosEntity produto = new ProdutosEntity();
-        produto.setDescricao("Produto Lock");
-        produto.setPrecoCusto(new BigDecimal("10.00"));
+        ProdutosEntity produto = new ProdutosEntity("Produto Lock", new BigDecimal("10.00"));
         ProdutosEntity salvo = produtosRepository.saveAndFlush(produto);
 
         System.out.println("salvo: ".concat(salvo.toString()));
