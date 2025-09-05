@@ -1,18 +1,21 @@
 package br.com.pogger.pdvfree.produtos;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.test.annotation.Rollback;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.util.List;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.test.annotation.Rollback;
+
 import jakarta.persistence.EntityManager;
 
 @DataJpaTest
@@ -125,4 +128,22 @@ class ProdutosRepositoryTest {
             produtosRepository.saveAndFlush(usuario2);
         }).isInstanceOf(ObjectOptimisticLockingFailureException.class);
     }
+
+    //deve gerar uma exceção ao tentar salvar dois produtos com a mesma descrição
+    @Test
+    @DisplayName("Deve lançar exceção ao tentar salvar dois produtos com a mesma descrição")
+    void testUniqueConstraintOnDescricao() {
+        ProdutosEntity produto1 = new ProdutosEntity();
+        produto1.setDescricao("Descricao Unica");
+        produto1.setPrecoCusto(new BigDecimal("5.00"));
+        produtosRepository.saveAndFlush(produto1); //salva e confirma no banco
+        entityManager.clear(); //limpa o contexto de persistência para simular nova transação
+        ProdutosEntity produto2 = new ProdutosEntity();
+        produto2.setDescricao("Descricao Unica"); //mesma descrição
+        produto2.setPrecoCusto(new BigDecimal("6.00")); 
+        assertThatThrownBy(() -> {
+            produtosRepository.saveAndFlush(produto2); //tenta salvar e confirmar no banco
+        }).isInstanceOf(DataIntegrityViolationException.class); //pode ser DataIntegrityViolationException ou outra dependendo do banco
+    }
+
 }

@@ -11,7 +11,13 @@ public class ProdutosService {
     @Autowired
     private ProdutosRepository repositorio;
 
-    public String incluir(){
+    //método para buscar todos os produtos
+    public Iterable<ProdutosEntity> findAll(){
+        return repositorio.findAll();
+    }
+
+    //método para incluir um produto de teste
+    public String incluirTeste(){
         ProdutosEntity produto = new ProdutosEntity();
         produto.setDescricao("Produto 1");
         produto.setPrecoCusto(BigDecimal.valueOf(10.555));
@@ -21,4 +27,9 @@ public class ProdutosService {
         return "OK";
     }
 
+    //método para incluir um novo produto
+    public ProdutosEntity incluir(ProdutosEntity novoProduto){
+        ProdutosEntity novo = repositorio.save(novoProduto);
+        return novo;
+    }
 }
