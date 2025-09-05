@@ -36,6 +36,15 @@ public class ProdutosEntity {
             .concat(" - ").concat(this.numeroVersao.toString());
     }
 
+    // Construtores
+    public ProdutosEntity() {
+    }
+
+    public ProdutosEntity(String descricao, BigDecimal precoCusto) {
+        this.descricao = descricao;
+        this.precoCusto = precoCusto;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
