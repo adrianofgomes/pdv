@@ -1,4 +1,5 @@
 package br.com.pogger.pdvfree.util;
+
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,8 @@ public class AppInfoUtil {
     }
 
     public String getNomeAplicacaoVersao() {
-        return buildProperties.getName() + " - " + buildProperties.getVersion() + " (" + buildProperties.getTime() + ")";
+        return buildProperties.getName() + " - " + buildProperties.getVersion() + " (" + buildProperties.getTime()
+                + ")";
     }
+
 }
