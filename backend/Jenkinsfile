@@ -1,0 +1,85 @@
+pipeline {
+    // Agente 'any' significa que a pipeline pode rodar em qualquer agente Jenkins disponível.
+    // Para ambientes de teste simples, geralmente funciona bem.
+    agent docker-jdk21
+
+    // Variáveis de ambiente
+    environment {
+        // Caminho do projeto Spring Boot
+        APP_PATH = 'backend'
+        // Nome da imagem Docker local
+        DOCKER_IMAGE = 'spring-app-test:latest'
+        // Nome do contêiner Docker rodando atualmente
+        CONTAINER_NAME = 'pdv-app-container'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Fazendo checkout do código do Git...'
+                checkout scm
+            }
+        }
+
+        stage('Build e Testes Unitários') {
+            steps {
+                echo 'Iniciando build Maven...'
+                dir(env.APP_PATH) {
+                    // Executa o clean, compila, testa e gera o JAR
+                    sh 'mvn clean install -DskipTests=false'
+                }
+            }
+        }
+
+        stage('Containerizar (Docker Build)') {
+            steps {
+                echo 'Criando a imagem Docker localmente...'
+                // Muda para o diretório do backend onde o pom.xml e o Dockerfile devem estar
+                dir(env.APP_PATH) {
+                    // Assume que há um Dockerfile nesse diretório que copia o JAR e o executa.
+                    sh "docker build -t ${env.DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Deployment (Atualização Simples)') {
+            steps {
+                echo 'Iniciando processo de deployment no ambiente de testes...'
+                // A estratégia é: Parar -> Remover Contêiner Antigo -> Rodar Novo
+
+                // 1. Tenta parar o contêiner antigo se ele existir
+                script {
+                    def stopContainer = sh(
+                        script: "docker stop ${env.CONTAINER_NAME}",
+                        returnStatus: true
+                    )
+                    if (stopContainer == 0) {
+                        echo "Contêiner ${env.CONTAINER_NAME} parado com sucesso."
+                    } else {
+                        echo "Contêiner não estava rodando ou não existe, continuando..."
+                    }
+                }
+
+                // 2. Remove o contêiner antigo (força a remoção para liberar a porta, se necessário)
+                sh "docker rm -f ${env.CONTAINER_NAME} || true"
+
+                // 3. Roda a nova imagem em background, mapeando a porta 8081
+                sh "docker run -d --name ${env.CONTAINER_NAME} -p 8081:8081 ${env.DOCKER_IMAGE}"
+                echo "Nova versão da aplicação Spring Boot iniciada em http://localhost:8081"
+            }
+        }
+    }
+
+    post {
+        always {
+            // Ações que sempre acontecem, como limpar workspace
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline concluída com SUCESSO! A nova versão está no ar.'
+        }
+        failure {
+            echo 'Pipeline FALHOU! Verifique os logs de build e testes.'
+        }
+    }
+}
