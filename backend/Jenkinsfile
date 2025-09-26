@@ -47,25 +47,36 @@ pipeline {
                 echo 'Iniciando processo de deployment no ambiente de testes...'
                 // A estratégia é: Parar -> Remover Contêiner Antigo -> Rodar Novo
 
-                // 1. Tenta parar o contêiner antigo se ele existir
-                script {
-                    def stopContainer = sh(
-                        script: "docker stop ${env.CONTAINER_NAME}",
-                        returnStatus: true
-                    )
-                    if (stopContainer == 0) {
-                        echo "Contêiner ${env.CONTAINER_NAME} parado com sucesso."
-                    } else {
-                        echo "Contêiner não estava rodando ou não existe, continuando..."
+                echo "Injetando variáveis de ambiente e iniciando deployment..."
+                // Usando withCredentials para carregar credenciais secretas do Jenkins
+                withCredentials([string(credentialsId: 'PDV_MYSQL_URL', variable: 'MYSQL_URL'), 
+                                 string(credentialsId: 'PDV_MYSQL_USER', variable: 'MYSQL_USER'), 
+                                 string(credentialsId: 'PDV_MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD')]) {
+                
+                    // 1. Tenta parar o contêiner antigo se ele existir
+                    script {
+                        def stopContainer = sh(
+                            script: "docker stop ${env.CONTAINER_NAME}",
+                            returnStatus: true
+                        )
+                        if (stopContainer == 0) {
+                            echo "Contêiner ${env.CONTAINER_NAME} parado com sucesso."
+                        } else {
+                            echo "Contêiner não estava rodando ou não existe, continuando..."
+                        }
                     }
+
+                    // 2. Remove o contêiner antigo (força a remoção para liberar a porta, se necessário)
+                    sh "docker rm -f ${env.CONTAINER_NAME} || true"
+
+                    // 3. Roda a nova imagem em background, mapeando a porta 8081
+                    sh "docker run -d --name ${env.CONTAINER_NAME} \\
+                        -p 8081:8081 ${env.DOCKER_IMAGE} \\
+                        -e MYSQL_URL=${env.MYSQL_URL} \\
+                        -e MYSQL_USER=${env.MYSQL_USER} \\
+                        -e MYSQL_PASSWORD=${env.MYSQL_PASSWORD}"
+                    echo "Nova versão da aplicação Spring Boot iniciada em http://localhost:8081"
                 }
-
-                // 2. Remove o contêiner antigo (força a remoção para liberar a porta, se necessário)
-                sh "docker rm -f ${env.CONTAINER_NAME} || true"
-
-                // 3. Roda a nova imagem em background, mapeando a porta 8081
-                sh "docker run -d --name ${env.CONTAINER_NAME} -p 8081:8081 ${env.DOCKER_IMAGE}"
-                echo "Nova versão da aplicação Spring Boot iniciada em http://localhost:8081"
             }
         }
     }
