@@ -1,7 +1,7 @@
 pipeline {
     // Agente 'any' significa que a pipeline pode rodar em qualquer agente Jenkins disponível.
     // Para ambientes de teste simples, geralmente funciona bem.
-    agent docker-jdk21
+    agent { label 'docker-jdk21' }
 
     // Variáveis de ambiente
     environment {
