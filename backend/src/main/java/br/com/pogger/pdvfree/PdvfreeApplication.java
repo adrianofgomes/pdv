@@ -3,7 +3,7 @@ package br.com.pogger.pdvfree;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import br.com.pogger.pdvfree.util.PreConnectionChecker;
+//import br.com.pogger.pdvfree.util.PreConnectionChecker;
 
 @SpringBootApplication
 public class PdvfreeApplication {
@@ -14,7 +14,8 @@ public class PdvfreeApplication {
         SpringApplication app = new SpringApplication(PdvfreeApplication.class);
 
         // REGISTRO ESTÁTICO: Adicione o listener antes de rodar o aplicativo
-        app.addListeners(new PreConnectionChecker());
+        // utilizado para verificar a conexão com o banco antes de iniciar a aplicação. desativado após resolver docker.
+        // app.addListeners(new PreConnectionChecker());
 
         // Inicie o aplicativo
         app.run(args);
