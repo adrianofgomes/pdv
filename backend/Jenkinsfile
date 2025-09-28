@@ -70,11 +70,9 @@ pipeline {
                     sh "docker rm -f ${env.CONTAINER_NAME} || true"
 
                     // 3. Roda a nova imagem em background, mapeando a porta 8081
-                    sh 'docker run -d --name ${env.CONTAINER_NAME} \
-                        -p 8081:8081 ${env.DOCKER_IMAGE} \
-                        -e MYSQL_URL=${MYSQL_URL} \
-                        -e MYSQL_USER=${MYSQL_USER} \
-                        -e MYSQL_PASSWORD=${MYSQL_PASSWORD}'
+                    sh "docker run -d --name ${env.CONTAINER_NAME} -p 8081:8081 " +
+                        '-e MYSQL_URL=$MYSQL_URL -e MYSQL_USER=$MYSQL_USER -e MYSQL_PASSWORD=$MYSQL_PASSWORD ' +
+                        "${env.DOCKER_IMAGE}"
                     echo "Nova versão da aplicação Spring Boot iniciada em http://localhost:8081"
                 }
             }
