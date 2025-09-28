@@ -1,4 +1,4 @@
-Projeto Open Source para explorar Spring Boot e outras ferramentas
+# Projeto Open Source para explorar Spring Boot e outras ferramentas
 
 Inicialmente temos backend com Java JDK 21 (Amazon Corretto) / Spring Boot 3.5.5
 
@@ -13,7 +13,7 @@ backend\src\main\resources\application.properties configurado para carregar par�
 
 Utilizando VSCode local e GitHub Codespaces para codificação. No Codespaces configurar variáveis de ambiente acima na opção "Secrets and variables".
 
-- CI/CD
+## CI/CD
 Utilizando Jenkins para CI/CD rodando via Docker num servidor Debian. Jenkins sendo executado através do docker-compose.yml da pasta servers. Utilizando Docker Cloud Agent no Docker utilizando o mesmo serviço Docker do host. Imagem do agente em server/agente-jenkis/Dockerfile
 
 Para que o Jenkins consiga utilizar o próprio Docker do host é necessário configurá-lo com URI: unix:///var/run/docker.sock
@@ -22,7 +22,7 @@ A aplicação Spring Boot por sua vez também é executada via Docker e por isso
 
 O job de build/deploy da aplicação no Jenkins é configurado para baixar o backend/Jenkinsfile diretamente do GitHub através da opção "Pipeline script from SCM"
 
--- comandos docker úteis:
+### Comandos docker úteis:
 
 docker ps -a
 
